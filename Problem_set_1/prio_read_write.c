@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-
+#include <unistd.h>
 int File = 10;
 int reader_count = 0;
 int writer_count = 0;
@@ -31,6 +31,8 @@ void *reader(void *param){
         pthread_cond_signal(wconds);
         
     }
+    fflush(stdout);
+    pthread_exit(0);
     
 
 }
@@ -51,6 +53,8 @@ void *writer(void *param){
     if(reader_count = 5){
         pthread_cond_signal(wconds);
     }
+    fflush(stdout);
+    pthread_exit(0);
 
 }
 
@@ -64,9 +68,11 @@ int main(int argc, char const *argv[])
     for(int i=0; i<5; i++){
         if ( pthread_create(&rpid[i],NULL,reader,NULL) != 0){
             fprintf(stderr, "Unable to create reader thread\n");
+            exit(1);
         }
-        if ( pthread_create(&wpid[i],NULL,reader,NULL) != 0){
+        if ( pthread_create(&wpid[i],NULL,writer,NULL) != 0){
             fprintf(stderr, "Unable to create writer thread\n");
+            exit(1);
         }
     }
     for(int i = 0; i < 5; i++) {
